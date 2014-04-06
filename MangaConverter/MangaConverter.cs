@@ -34,7 +34,7 @@ namespace MangaConverter
                 cmpt++;
                 var mangaName = m.GetName();
                 Log.I("Converting {0}/{1}: {2}", cmpt, all.Count, mangaName);
-                EbookGenerator.SaveAsCbz(GetSplitedPages(m).Select(Clean), destDir, mangaName);
+                EbookGenerator.Save(GetSplitedPages(m).Select(Clean), destDir, mangaName, OutputFormat.Format);
             }
         }
 

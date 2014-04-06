@@ -22,33 +22,29 @@ namespace Manga2Reader
 
             var p = new OptionSet() {
                 {
-                    "s|source=",
-                    "Path to the manga(s) to convert. You can point to a directory containing many manga or to a single file.",
-                    v => source = v
-                },
-                {
-                    "d|destination:",
-                    "Directory to store converted mangas to",
+                    "d|destination=",
+                    "Directory to store converted mangas to. Default to ./Manga2Reader",
                     v => destination = v
                 },
                 { 
                     "p|presset=",
-                    "Predefined output forma. Avalable options are:\n" + MangaOutputFormat.Presets.Select(kv => kv.Key + ": " + kv.Value).Join("\n"),
+                    "Predefined output format.\nPossible values are:\n" +
+                        MangaOutputFormat.Presets.Select(kv => String.Format(" - {0}: {1}", kv.Key, kv.Value)).Join("\n"),
                     v => outputFormat = StringToOutputFormat(v)
                 },
                 {
                     "v",
-                    "display verbose messages",
+                    "Display verbose messages",
                     v => logLevel = v == null || logLevel > Logger.LogLevel.Verbose ? logLevel : Logger.LogLevel.Verbose
                 },
                 {
                     "debug",
-                    "display debug messages",
+                    "Display debug messages",
                     v => logLevel = v == null || logLevel > Logger.LogLevel.Debug ? logLevel : Logger.LogLevel.Debug
                 },
                 {
                     "h|help", 
-                    "show this message and exit", 
+                    "Show this message and exit", 
                     v => showHelp = v != null
                 },
             };
@@ -63,13 +59,8 @@ namespace Manga2Reader
                     ShowHelp(p);
                     return;
                 }
-                else
-                {
-                    if (source == null)
-                        throw new InvalidOperationException("Missing required option --source");
-                    if (destination == null)
-                        throw new InvalidOperationException("Missing required option --destination");
-                }
+                source = extra.FirstOrDefault() ?? ".";
+                destination = destination ?? "./Manga2Reader";
                 
             }
             catch (Exception e)
@@ -90,6 +81,12 @@ namespace Manga2Reader
             catch (Exception e)
             {
                 Console.WriteLine("Error: {0}", e.Message);
+                if (logLevel >= Logger.LogLevel.Debug)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("StackTrace:");
+                    Console.WriteLine(e.StackTrace);
+                }
             }
         }
 
@@ -102,8 +99,11 @@ namespace Manga2Reader
 
         static void ShowHelp(OptionSet p)
         {
-            Console.WriteLine("Usage: Manga2Reader [OPTIONS]");
-            Console.WriteLine("Convert mangas for better eReader compatibility");
+            Console.WriteLine();
+            Console.WriteLine("Usage: Manga2Reader [source path] [options]");
+            Console.WriteLine();
+            Console.WriteLine("Detect comic books in source path and convert if for optimal readability on any e-reader");
+            Console.WriteLine("[source path] default to ./");
             Console.WriteLine();
             Console.WriteLine("Options:");
             p.WriteOptionDescriptions(Console.Out);

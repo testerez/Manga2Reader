@@ -38,11 +38,11 @@ namespace MangaConverter
             var parts = new List<String>();
             if(!String.IsNullOrEmpty(Name))
                 parts.Add(Name);
-            parts.Add("format " + Format);
-            if (SplitDoublePages)
-                parts.Add("Split double pages");
+            parts.Add(Format + " output");
             if (MaxResolution != null)
                 parts.Add(String.Format("{0}x{1}", MaxResolution.Value.Width, MaxResolution.Value.Height));
+            if (SplitDoublePages)
+                parts.Add("Split double pages");
             return parts.Join(", ");
         }
     }

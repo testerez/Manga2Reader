@@ -28,6 +28,8 @@ namespace MangaConverter
 
         public static void SaveAsCbz(IEnumerable<Image> images, String destDir, String name)
         {
+            Directory.CreateDirectory(destDir);
+
             String dest = Path.Combine(destDir, name + ".cbz");
             int page = 1;
             using (var s = new ZipOutputStream(dest))
