@@ -12,14 +12,14 @@ Usage
 Available Options
 -----------------
 
-`-d, --destination=VALUE` Directory to store converted mangas to. Default to ./Manga2Reader
-`-p, --presset=VALUE` Predefined output format. Possible values are:
+- `-d, --destination=VALUE` Directory to store converted mangas to. Default to ./Manga2Reader
+- `-p, --presset=VALUE` Predefined output format. Possible values are:
 
  - `kobo_aura`: Kobo Aura, Cbz output, 758x1014, Split double pages
 
-`-v` Display verbose messages
-`--debug` Display debug messages
-`-h, --help` Show this message and exit
+- `-v` Display verbose messages
+- `--debug` Display debug messages
+- `-h, --help` Show this message and exit
 
 
 Actual features
