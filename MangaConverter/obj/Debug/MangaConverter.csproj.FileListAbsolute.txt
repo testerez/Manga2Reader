@@ -1,0 +1,13 @@
+c:\users\tom\documents\visual studio 2013\Projects\Manga2Reader\MangaConverter\obj\Debug\MangaConverter.csprojResolveAssemblyReference.cache
+c:\users\tom\documents\visual studio 2013\Projects\Manga2Reader\MangaConverter\bin\Debug\MangaConverter.dll
+c:\users\tom\documents\visual studio 2013\Projects\Manga2Reader\MangaConverter\bin\Debug\MangaConverter.pdb
+c:\users\tom\documents\visual studio 2013\Projects\Manga2Reader\MangaConverter\bin\Debug\AForge.dll
+c:\users\tom\documents\visual studio 2013\Projects\Manga2Reader\MangaConverter\bin\Debug\AForge.Imaging.dll
+c:\users\tom\documents\visual studio 2013\Projects\Manga2Reader\MangaConverter\bin\Debug\AForge.Math.dll
+c:\users\tom\documents\visual studio 2013\Projects\Manga2Reader\MangaConverter\bin\Debug\Ionic.Zip.dll
+c:\users\tom\documents\visual studio 2013\Projects\Manga2Reader\MangaConverter\bin\Debug\AForge.xml
+c:\users\tom\documents\visual studio 2013\Projects\Manga2Reader\MangaConverter\bin\Debug\AForge.Imaging.xml
+c:\users\tom\documents\visual studio 2013\Projects\Manga2Reader\MangaConverter\bin\Debug\AForge.Math.xml
+c:\users\tom\documents\visual studio 2013\Projects\Manga2Reader\MangaConverter\bin\Debug\Ionic.Zip.xml
+c:\users\tom\documents\visual studio 2013\Projects\Manga2Reader\MangaConverter\obj\Debug\MangaConverter.dll
+c:\users\tom\documents\visual studio 2013\Projects\Manga2Reader\MangaConverter\obj\Debug\MangaConverter.pdb

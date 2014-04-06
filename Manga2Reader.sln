@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaConverter", "MangaConverter\MangaConverter.csproj", "{29952455-D632-4521-8699-5BFC40FBA082}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manga2Reader", "Manga2Reader\Manga2Reader.csproj", "{184AF61F-B939-4A66-9668-0687680E9012}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{29952455-D632-4521-8699-5BFC40FBA082}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29952455-D632-4521-8699-5BFC40FBA082}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29952455-D632-4521-8699-5BFC40FBA082}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29952455-D632-4521-8699-5BFC40FBA082}.Release|Any CPU.Build.0 = Release|Any CPU
+		{184AF61F-B939-4A66-9668-0687680E9012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{184AF61F-B939-4A66-9668-0687680E9012}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{184AF61F-B939-4A66-9668-0687680E9012}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{184AF61F-B939-4A66-9668-0687680E9012}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
