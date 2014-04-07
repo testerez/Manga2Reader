@@ -5,7 +5,7 @@ Manga2Reader
 
 Usage
 -----
-> Manga2Reader [source path] [options]
+    Manga2Reader [source path] [options]
 
 `[source path]` defaut to `./`, Default destination is `./Manga2Reader`
 
