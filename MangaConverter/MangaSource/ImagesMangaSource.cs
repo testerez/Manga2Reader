@@ -27,7 +27,7 @@ namespace MangaConverter.MangaSource
             return Directory.EnumerateFiles(_path, "*.jpg").Select(f => (Bitmap)Bitmap.FromFile(f));
         }
 
-        public int? GetPagesCount()
+        public int? GetApproximatePagesCount()
         {
             return Directory.EnumerateFiles(_path, "*.jpg").Count();
         }

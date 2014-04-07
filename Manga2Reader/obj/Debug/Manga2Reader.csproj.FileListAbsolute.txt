@@ -15,3 +15,5 @@ C:\Users\Tom\documents\visual studio 2013\Projects\Manga2Reader\Manga2Reader\bin
 C:\Users\Tom\documents\visual studio 2013\Projects\Manga2Reader\Manga2Reader\obj\Debug\Manga2Reader.csprojResolveAssemblyReference.cache
 C:\Users\Tom\documents\visual studio 2013\Projects\Manga2Reader\Manga2Reader\obj\Debug\Manga2Reader.exe
 C:\Users\Tom\documents\visual studio 2013\Projects\Manga2Reader\Manga2Reader\obj\Debug\Manga2Reader.pdb
+C:\Users\Tom\documents\visual studio 2013\Projects\Manga2Reader\Manga2Reader\bin\Debug\itextsharp.dll
+C:\Users\Tom\documents\visual studio 2013\Projects\Manga2Reader\Manga2Reader\bin\Debug\itextsharp.xml

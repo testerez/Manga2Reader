@@ -42,6 +42,9 @@
     <Reference Include="Ionic.Zip">
       <HintPath>..\packages\DotNetZip.1.9.2\lib\net20\Ionic.Zip.dll</HintPath>
     </Reference>
+    <Reference Include="itextsharp">
+      <HintPath>..\packages\iTextSharp.5.5.0\lib\itextsharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -60,6 +63,7 @@
     <Compile Include="MangaOutputFormat.cs" />
     <Compile Include="MangaSource\ImagesMangaSource.cs" />
     <Compile Include="MangaSource\IMangaSource.cs" />
+    <Compile Include="MangaSource\PdfMangaSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

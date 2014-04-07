@@ -15,10 +15,17 @@ namespace MangaConverter
             true,
             "Kobo Aura");
 
+        public static MangaOutputFormat PC = new MangaOutputFormat(
+            EbookGenerator.Format.Cbz,
+            null,
+            false,
+            "PC");
+
         public static MangaOutputFormat Default = KoboAura;
 
         public static Dictionary<String, MangaOutputFormat> Presets = new Dictionary<String, MangaOutputFormat>{
-            {"kobo_aura", KoboAura}
+            {"kobo_aura", KoboAura},
+            {"pc", PC},
         };
 
         public EbookGenerator.Format Format { get; private set; }

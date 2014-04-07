@@ -60,17 +60,18 @@ namespace MangaConverter
             }
             else if (File.Exists(src))
             {
-                var ext = src.Split('.').Last().ToLower();
-                switch (ext)
+                switch (Path.GetExtension(src).ToLower())
                 {
-                    //TODO: Handle other formats like PDF, zip, cbz, ...
+                    case ".pdf" :
+                        yield return new PdfMangaSource(src);
+                        break;
                 }
             }
         }
 
         private IEnumerable<Bitmap> GetSplitedPages(IMangaSource src){
             int cmpt = 0;
-            int? pagesCount = src.GetPagesCount();
+            int? pagesCount = src.GetApproximatePagesCount();
             foreach(var p in src.GetPages()){
                 Log.V("Processing page {0}/{1}", ++cmpt, pagesCount == null ? "?" : "" + pagesCount);
                 if(OutputFormat.SplitDoublePages){
