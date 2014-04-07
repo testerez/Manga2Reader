@@ -65,6 +65,10 @@ namespace MangaConverter
                     case ".pdf" :
                         yield return new PdfMangaSource(src);
                         break;
+                    case ".zip":
+                    case ".cbz":
+                        yield return new ArchiveMangaSource(src);
+                        break;
                 }
             }
         }

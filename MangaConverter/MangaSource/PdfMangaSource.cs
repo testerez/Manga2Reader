@@ -50,29 +50,30 @@ namespace MangaConverter.MangaSource
             PdfDictionary res = (PdfDictionary)(PdfReader.GetPdfObject(dict.Get(PdfName.RESOURCES)));
             PdfDictionary xobj = (PdfDictionary)(PdfReader.GetPdfObject(res.Get(PdfName.XOBJECT)));
 
-            if (xobj != null)
-            {
-                foreach (PdfName name in xobj.Keys)
-                {
-                    PdfObject obj = xobj.Get(name);
-                    if (!obj.IsIndirect())
-                        yield break;
-                    PdfDictionary tg = (PdfDictionary)(PdfReader.GetPdfObject(obj));
-                    PdfName subtype = (PdfName)(PdfReader.GetPdfObject(tg.Get(PdfName.SUBTYPE)));
-                    if (PdfName.IMAGE.Equals(subtype))
-                    {
-                        int xrefIdx = ((PRIndirectReference)obj).Number;
-                        PdfObject pdfObj = doc.GetPdfObject(xrefIdx);
-                        PdfStream str = (PdfStream)(pdfObj);
+            if (xobj == null)
+                yield break;
 
-                        var pdfImage = new PdfImageObject((PRStream)str);
-                        yield return (Bitmap)pdfImage.GetDrawingImage();
-                    }
-                    else if (PdfName.FORM.Equals(subtype) || PdfName.GROUP.Equals(subtype))
-                    {
-                        foreach(var i in GetImagesFromPdfDict(tg, doc))
-                            yield return i;
-                    }
+            foreach (PdfName name in xobj.Keys)
+            {
+                PdfObject obj = xobj.Get(name);
+                if (!obj.IsIndirect())
+                    continue;
+
+                PdfDictionary tg = (PdfDictionary)(PdfReader.GetPdfObject(obj));
+                PdfName subtype = (PdfName)(PdfReader.GetPdfObject(tg.Get(PdfName.SUBTYPE)));
+                if (PdfName.IMAGE.Equals(subtype))
+                {
+                    int xrefIdx = ((PRIndirectReference)obj).Number;
+                    PdfObject pdfObj = doc.GetPdfObject(xrefIdx);
+                    PdfStream str = (PdfStream)(pdfObj);
+
+                    var pdfImage = new PdfImageObject((PRStream)str);
+                    yield return (Bitmap)pdfImage.GetDrawingImage();
+                }
+                else if (PdfName.FORM.Equals(subtype) || PdfName.GROUP.Equals(subtype))
+                {
+                    foreach(var i in GetImagesFromPdfDict(tg, doc))
+                        yield return i;
                 }
             }
         }

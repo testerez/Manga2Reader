@@ -61,6 +61,7 @@
     <Compile Include="ImgUtil.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MangaOutputFormat.cs" />
+    <Compile Include="MangaSource\ArchiveMangaSource.cs" />
     <Compile Include="MangaSource\ImagesMangaSource.cs" />
     <Compile Include="MangaSource\IMangaSource.cs" />
     <Compile Include="MangaSource\PdfMangaSource.cs" />
