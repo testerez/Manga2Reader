@@ -25,12 +25,15 @@ Available Options
 Actual features
 ---------------
 
- - Detect and convert all comic books in source directory (support zip, cbz, pdf and jpg files)
- - Support directory of .jpg files as input
+ - Detect and convert all comic books in source directory. Supported formats:
+    - zip
+    - cbz
+    - pdf
+    - jpg files
  - Split double pages into single ones
  - Optimize contrast. Usefull when the scan has not been cleaned
- - Resize images
- - Output zip, cbz or jpg files
+ - Resize images to feet e-reader screen resolution
+ - Output as zip, cbz or jpg files
  
 Future features
 ----------------
