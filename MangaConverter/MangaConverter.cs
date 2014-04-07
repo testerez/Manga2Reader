@@ -103,13 +103,14 @@ namespace MangaConverter
                 : new Grayscale(0.2125, 0.7154, 0.0721).Apply(src);
         }
 
-        private static Bitmap OptimizeContrast(Bitmap src)
+        private Bitmap OptimizeContrast(Bitmap src)
         {
             var statistics = new ImageStatistics(src);
             var filter = new AForge.Imaging.Filters.LevelsLinear();
-            filter.Input = new AForge.IntRange(
-                statistics.Gray.GetRange(0.8).Min,
-                statistics.Gray.GetRange(0.8).Max - 20);
+            var min = Math.Min(100, statistics.Gray.GetRange(0.8).Min);
+            var max = Math.Max(150, statistics.Gray.GetRange(0.8).Max - 20);
+            filter.Input = new AForge.IntRange(min, max);
+            Log.D("Applying level filter (min: {0}, max: {1})", min, max);
             return filter.Apply(src);
         }
     }

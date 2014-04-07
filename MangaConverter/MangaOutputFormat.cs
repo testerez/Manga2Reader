@@ -16,9 +16,9 @@ namespace MangaConverter
             "Kobo Aura");
 
         public static MangaOutputFormat PC = new MangaOutputFormat(
-            EbookGenerator.Format.Cbz,
+            EbookGenerator.Format.Images,
             null,
-            false,
+            true,
             "PC");
 
         public static MangaOutputFormat Default = KoboAura;

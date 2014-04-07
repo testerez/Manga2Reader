@@ -11,36 +11,33 @@ namespace MangaConverter
     public static class ImgUtil
     {
 
-        public static void Compress(Image b, Stream output, ImageFormat fmt, int? jpegQ)
+        public static void Compress(Image b, Stream output, ImageFormat fmt, int? jpegQ = null)
         {
             if (fmt == ImageFormat.Jpeg)
-            {
-                var codec = ImageCodecInfo.GetImageEncoders()
-                    .FirstOrDefault(e => e.MimeType == "image/jpeg");
-                var ep = new EncoderParameters(1);
-                ep.Param[0] = new EncoderParameter(Encoder.Quality, jpegQ ?? 85);
-                b.Save(output, codec, ep);
-            }
+                b.Save(output, GetJpgCodec(), GetQualityEncodeParam(jpegQ));
             else
-            {
                 b.Save(output, fmt);
-            }
         }
 
-        public static void Compress(Image b, String outputFile, ImageFormat fmt, int? jpegQ)
+        public static void Compress(Image b, String outputFile, ImageFormat fmt, int? jpegQ = null)
         {
             if (fmt == ImageFormat.Jpeg)
-            {
-                var codec = ImageCodecInfo.GetImageEncoders()
-                    .FirstOrDefault(e => e.MimeType == "image/jpeg");
-                var ep = new EncoderParameters(1);
-                ep.Param[0] = new EncoderParameter(Encoder.Quality, jpegQ ?? 85);
-                b.Save(outputFile, codec, ep);
-            }
+                b.Save(outputFile, GetJpgCodec(), GetQualityEncodeParam(jpegQ));
             else
-            {
                 b.Save(outputFile, fmt);
-            }
+        }
+
+        private static ImageCodecInfo GetJpgCodec()
+        {
+            return ImageCodecInfo.GetImageEncoders()
+                .FirstOrDefault(e => e.MimeType == "image/jpeg");
+        }
+
+        private static EncoderParameters GetQualityEncodeParam(int? quality)
+        {
+            var ep = new EncoderParameters(1);
+            ep.Param[0] = new EncoderParameter(Encoder.Quality, quality ?? 85);
+            return ep;
         }
 
         /// <summary>

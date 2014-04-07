@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MangaConverter;
 using NDesk.Options;
+using System.IO;
 
 namespace Manga2Reader
 {
@@ -60,7 +61,7 @@ namespace Manga2Reader
                     return;
                 }
                 source = extra.FirstOrDefault() ?? ".";
-                destination = destination ?? "./Manga2Reader";
+                destination = destination ?? Path.Combine(".", "Manga2Reader");
                 
             }
             catch (Exception e)
