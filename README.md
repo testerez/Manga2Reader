@@ -22,7 +22,7 @@ Available Options
 - `-h, --help` Show this message and exit
 
 
-Actual features
+Current features
 ---------------
 
  - Detect and convert all comic books in source directory. Supported formats:
@@ -38,4 +38,5 @@ Actual features
 Future features
 ----------------
  - Better image cleaning (straighten, crop useless borders...)
+ - Add presets for other e-reders (kindle...)
  - Add a GUI
