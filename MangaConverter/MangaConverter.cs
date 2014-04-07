@@ -26,15 +26,26 @@ namespace MangaConverter
 
         public void ConvertAll(String src, String destDir)
         {
+            if (Directory.Exists(src))
+                Log.I("Scannig '{0}' for mangas...", Path.GetFullPath(src));
             var all = FindMangaRecursive(src).ToList();
             if (all.Count == 0)
                 Log.E("No manga found in '{0}'", src);
             int cmpt = 0;
             foreach(var m in all){
                 cmpt++;
-                var mangaName = m.GetName();
-                Log.I("Converting {0}/{1}: {2}", cmpt, all.Count, mangaName);
-                EbookGenerator.Save(GetSplitedPages(m).Select(Clean), destDir, mangaName, OutputFormat.Format);
+                
+                try
+                {
+                    var mangaName = m.GetName();
+                    Log.I("Converting {0}/{1}: {2}", cmpt, all.Count, mangaName);
+                    EbookGenerator.Save(GetSplitedPages(m).Select(Clean), destDir, mangaName, OutputFormat.Format);
+                }
+                catch (Exception ex)
+                {
+                    Log.E(ex.Message);
+                }
+                
             }
         }
 
@@ -48,26 +59,66 @@ namespace MangaConverter
             return src;
         }
 
+        public IEnumerable<String> SafeEnumerateFiles(String path, String searchPattern = "*",
+            SearchOption option = SearchOption.TopDirectoryOnly, IEnumerable<String> ignoreList = null)
+        {
+            String[] files = null;
+            try
+            {
+                files = Directory.GetFiles(path, searchPattern);
+            }
+            catch(Exception e)
+            {
+                Log.D(e.Message);
+            }
+
+            if (files == null)
+                yield break;
+
+            foreach (var f in files)
+                yield return f;
+
+            if (option == SearchOption.AllDirectories)
+            {
+                ignoreList = ignoreList ?? Enumerable.Empty<String>();
+                foreach (var f in Directory.EnumerateDirectories(path)
+                    .Except(ignoreList, StringComparer.InvariantCultureIgnoreCase)
+                    .SelectMany(d => SafeEnumerateFiles(d, searchPattern, option, ignoreList)))
+                {
+                    yield return f;
+                }
+            }
+        }
+
         public IEnumerable<IMangaSource> FindMangaRecursive(String src)
         {
-            if (Directory.Exists(src))
+            var ignoreList = new[]{
+                @"c:\windows",
+                @"c:\$Recycle.Bin",
+                @"c:\ProgramData",
+            };
+            bool srcIsFile = File.Exists(src);
+            var files = srcIsFile ? new[] { src } : SafeEnumerateFiles(src, "*", SearchOption.AllDirectories, ignoreList);
+            var imageMangaDirectories = new HashSet<String>();
+
+            foreach (var f in files)
             {
-                if (Directory.GetFiles(src, "*.jpg").Any())
-                    yield return new ImagesMangaSource(src);
-                foreach (var d in Directory.GetFiles(src).Concat(Directory.GetDirectories(src)))
-                    foreach(var s in FindMangaRecursive(d))
-                        yield return s;
-            }
-            else if (File.Exists(src))
-            {
-                switch (Path.GetExtension(src).ToLower())
+                switch (Path.GetExtension(f).ToLower())
                 {
-                    case ".pdf" :
-                        yield return new PdfMangaSource(src);
+                    case ".pdf":
+                        yield return new PdfMangaSource(f);
                         break;
                     case ".zip":
                     case ".cbz":
-                        yield return new ArchiveMangaSource(src);
+                        yield return new ArchiveMangaSource(f);
+                        break;
+                    case ".jpg":
+                    case ".jpeg":
+                        if (!imageMangaDirectories.Contains(src))
+                        {
+                            yield return new ImagesMangaSource(src);
+                            imageMangaDirectories.Add(src);
+                        }
                         break;
                 }
             }
