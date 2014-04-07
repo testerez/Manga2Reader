@@ -12,7 +12,7 @@ namespace MangaConverter
 {
     public class EbookGenerator
     {
-        public enum Format { Cbz, Images }
+        public enum Format { Cbz, Zip, Images }
 
         public static void Save(IEnumerable<Image> images, String destDir, String name, Format format)
         {
@@ -20,6 +20,9 @@ namespace MangaConverter
             {
                 case Format.Cbz:
                     SaveAsCbz(images, destDir, name);
+                    break;
+                case Format.Zip:
+                    SaveAsZip(images, destDir, name);
                     break;
                 case Format.Images:
                     SaveAsImages(images, destDir, name);
@@ -31,9 +34,19 @@ namespace MangaConverter
 
         public static void SaveAsCbz(IEnumerable<Image> images, String destDir, String name)
         {
+            SaveAsArchive(images, destDir, name, ".cbz");
+        }
+
+        public static void SaveAsZip(IEnumerable<Image> images, String destDir, String name)
+        {
+            SaveAsArchive(images, destDir, name, ".zip");
+        }
+
+        private static void SaveAsArchive(IEnumerable<Image> images, String destDir, String name, String ext)
+        {
             Directory.CreateDirectory(destDir);
 
-            String dest = Path.Combine(destDir, name + ".cbz");
+            String dest = Path.Combine(destDir, name + ext);
             int page = 1;
             using (var s = new ZipOutputStream(dest))
             {
