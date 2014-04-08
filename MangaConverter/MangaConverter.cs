@@ -45,7 +45,13 @@ namespace MangaConverter
                 {
                     var mangaName = m.GetName();
                     Log.I("Converting {0}/{1}: {2} ({3})", cmpt, all.Count, mangaName, m.Location);
-                    EbookGenerator.Save(GetSplitedPages(m).Select(Clean), destDir, mangaName, OutputFormat.Format);
+                    EbookGenerator.Save(
+                        GetSplitedPages(m)
+                            .Select(Clean)
+                            .Select(ResizeForOutput),
+                        destDir,
+                        mangaName,
+                        OutputFormat.Format);
                 }
                 catch (Exception ex)
                 {
@@ -57,16 +63,38 @@ namespace MangaConverter
             }
         }
 
-        private Bitmap Clean(Bitmap src)
+        public static bool IsClean(Bitmap b)
         {
-            if(EnableStraighten)
-                src = Straighten(src);
-            if (EnableCropBorders)
-                src = CropBorders(src);
+            b = GrayscaleIfNeeded(b);
+            var g = new ImageStatistics(b).Gray;
+            int grayTotal = g.Values
+                .Skip(10)
+                .Take(g.Values.Length - 20)
+                .Sum();
+            return grayTotal < g.TotalCount * 0.5;
+        }
+
+        public Bitmap ResizeForOutput(Bitmap b)
+        {
+            return OutputFormat.MaxResolution == null
+                ? b
+                : ImgUtil.Scale(b, OutputFormat.MaxResolution.Value.Width, OutputFormat.MaxResolution.Value.Height);
+        }
+
+        public Bitmap Clean(Bitmap src)
+        {
+            //Skip slow and risky operations if source seams already cleen
+            if (!IsClean(src))
+            {
+                if (EnableStraighten)
+                    src = Straighten(src);
+                if (EnableCropBorders)
+                    src = CropBorders(src);
+            }
+
             if (EnableContrastOptimization)
                 src = OptimizeContrast(src);
-            if (OutputFormat.MaxResolution != null)
-                src = ImgUtil.Scale(src, OutputFormat.MaxResolution.Value.Width, OutputFormat.MaxResolution.Value.Height);
+            
             return src;
         }
 

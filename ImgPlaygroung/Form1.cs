@@ -14,6 +14,7 @@ using System.Diagnostics;
 using MangaConverter;
 using AForge;
 using AForge.Math.Geometry;
+using AForge.Math;
 
 namespace ImgPlaygroung
 {
@@ -58,7 +59,7 @@ namespace ImgPlaygroung
         public Form1()
         {
             InitializeComponent();
-            Original = (Bitmap)System.Drawing.Image.FromFile(@"C:\torrent\Monster - Urasawa\Monster Tome 01\Monster Tome 01 - 005.jpg");
+            Original = (Bitmap)System.Drawing.Image.FromFile(@"C:\Users\Tom\Desktop\test pages\Monster v01 c001 p005.jpg");
         }
 
         private void btReset_Click(object sender, EventArgs e)
@@ -92,25 +93,55 @@ namespace ImgPlaygroung
             }
         }
 
-        void DrawPoints(IEnumerable<IntPoint> points, int w = 2)
+        void DrawPoints(Bitmap src, IEnumerable<IntPoint> points, int w = 2, Color? color = null)
         {
-            var result = AForge.Imaging.Image.Clone(Working, PixelFormat.Format32bppArgb);
-            Working.Dispose();
-            using (var g = Graphics.FromImage(result))
-            using (var brush = new SolidBrush(GetRandomColor()))
-            using (var pen = new Pen(brush, w)){
+            using (var g = Graphics.FromImage(src))
+            using (var brush = new SolidBrush(color ?? GetRandomColor()))
+            using (var pen = new Pen(brush, w))
+            {
                 foreach (IntPoint p in points)
                 {
-                    g.DrawRectangle(pen, p.X - w/2, p.Y - w/2, w, w);
+                    g.DrawRectangle(pen, p.X - w / 2, p.Y - w / 2, w, w);
                 }
             }
-            Result = result;
+        }
+
+        void DrawLines(Bitmap src, IEnumerable<System.Drawing.Point> points, int w = 2, Color? color = null)
+        {
+            using (var g = Graphics.FromImage(src))
+            using (var brush = new SolidBrush(color ?? GetRandomColor()))
+            using (var pen = new Pen(brush, w))
+            {
+                g.DrawLines(pen, points.ToArray());
+            }
+        }
+
+        void DrawRectangle(Bitmap src, Rectangle r, int w = 2, Color? color = null)
+        {
+            using (var g = Graphics.FromImage(src))
+            using (var brush = new SolidBrush(color ?? GetRandomColor()))
+            using (var pen = new Pen(brush, w))
+            {
+                g.DrawRectangle(pen, r);
+            }
+        }
+
+        public void DrawHistogram(Bitmap src, Histogram h, Color? color = null)
+        {
+            if (h.Max == 0 || h.Values.Length == 0)
+                return;
+            var xRatio = (src.Width - 2) / (double)h.Values.Length;
+            var yRatio = (src.Height - 2) / (double)h.Values.Max();
+            DrawLines(src, h.Values.Select((v, i) => new System.Drawing.Point(
+                (int)(i * xRatio) + 1,
+                src.Height - (int)(v * yRatio) -1
+            )), 2, color);
         }
 
         int colorIndex = 0;
         Color GetRandomColor()
         {
-            return new[]{
+            var colors = new[]{
                 Color.Red,
                 Color.Blue,
                 Color.Green,
@@ -118,14 +149,37 @@ namespace ImgPlaygroung
                 Color.Salmon,
                 Color.Pink,
                 Color.Cyan
-            }[colorIndex++];
+            };
+            
+            return colors[colorIndex++ % colors.Length];
+        }
+
+        public static Bitmap GrayscaleIfNeeded(Bitmap src)
+        {
+            return src.PixelFormat == PixelFormat.Format8bppIndexed
+                ? src
+                : Grayscale.CommonAlgorithms.BT709.Apply(src);
         }
 
         private void btCurrentTest_Click(object sender, EventArgs e)
         {
-            var splited = Result = MangaConverter.MangaConverter.SplitPage(Working).Last();
+            Result = GrayscaleIfNeeded(Working);
+            var g = new ImageStatistics(Working).Gray;
+            int grayTotal = g.Values
+                .Skip(10)
+                .Take(g.Values.Length - 20)
+                .Sum();
+            Log("gray: {0}", grayTotal / (double)g.TotalCount);
 
+            Result = GrayscaleIfNeeded(Working);
+            var stats = new ImageStatistics(Working);
+            stats.Gray.GetRange(0.9);
+
+            var b = new Bitmap(500, 500);
+            DrawHistogram(b, stats.Gray);
+            Result = b;
         }
+
         void DrawHoughLines()
         {
             HoughLineTransformation lineTransform = new HoughLineTransformation()
@@ -194,12 +248,6 @@ namespace ImgPlaygroung
             }
         }
 
-        void Grayscale()
-        {
-            if(Working.PixelFormat != PixelFormat.Format8bppIndexed)
-                ApplyFilter(new GrayscaleBT709());
-        }
-
         private void CropBorders(object sender, EventArgs e)
         {
             Result = MangaConverter.MangaConverter.CropBorders(Working);
@@ -232,9 +280,7 @@ namespace ImgPlaygroung
 
         private void button6_Click(object sender, EventArgs e)
         {
-            Result = MangaConverter.MangaConverter.Straighten(Working);
-            Result = MangaConverter.MangaConverter.CropBorders(Working);
-            Result = MangaConverter.MangaConverter.OptimizeContrast(Working);
+            Result = new MangaConverter.MangaConverter(MangaOutputFormat.PC).Clean(Working);
         }
 
         private void button7_Click(object sender, EventArgs e)
