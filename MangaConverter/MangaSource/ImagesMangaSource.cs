@@ -19,7 +19,7 @@ namespace MangaConverter.MangaSource
 
         public string GetName()
         {
-            return Location.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries).Last();
+            return Path.GetFullPath(Location).Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries).Last();
         }
 
         public IEnumerable<Bitmap> GetPages()
