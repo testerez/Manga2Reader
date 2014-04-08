@@ -18,14 +18,16 @@ namespace MangaConverter
         public Logger Log { get; private set; }
         public bool EnableContrastOptimization { get; set; }
         public bool EnableCropBorders { get; set; }
+        public bool EnableStraighten { get; set; }
         public MangaOutputFormat OutputFormat { get; private set; }
 
-        public MangaConverter(MangaOutputFormat outputFormat, Logger l = null, bool optimizeContrast = true, bool cropBorders = true)
+        public MangaConverter(MangaOutputFormat outputFormat, Logger l = null, bool optimizeContrast = true, bool straighten = true, bool cropBorders = true)
         {
             Log = l ?? new ConsoleLogger();
             EnableContrastOptimization = optimizeContrast;
             OutputFormat = outputFormat;
             EnableCropBorders = cropBorders;
+            EnableStraighten = straighten;
         }
 
         public void ConvertAll(String src, String destDir)
@@ -57,9 +59,10 @@ namespace MangaConverter
 
         private Bitmap Clean(Bitmap src)
         {
+            if(EnableStraighten)
+                src = Straighten(src);
             if (EnableCropBorders)
                 src = CropBorders(src);
-            src = ForceGrayScale(src);
             if (EnableContrastOptimization)
                 src = OptimizeContrast(src);
             if (OutputFormat.MaxResolution != null)
@@ -159,11 +162,10 @@ namespace MangaConverter
             return r;
         }
 
-        private static Bitmap ForceGrayScale(Bitmap src)
+        public static Bitmap GrayscaleIfNeeded(Bitmap src)
         {
-            var statistics = new ImageStatistics(src);
-            return statistics.IsGrayscale
-                ? src
+            return src.PixelFormat == PixelFormat.Format8bppIndexed
+                ? src 
                 : Grayscale.CommonAlgorithms.BT709.Apply(src);
         }
 
@@ -171,11 +173,9 @@ namespace MangaConverter
         /// Detect and crop page borders
         /// </summary>
         /// <param name="src">8 bpp indexed</param>
-        private static Bitmap CropBorders(Bitmap src)
+        public static Bitmap CropBorders(Bitmap src)
         {
-            Bitmap tmp = src.PixelFormat == PixelFormat.Format8bppIndexed
-                ? src 
-                : Grayscale.CommonAlgorithms.BT709.Apply(src);
+            Bitmap tmp = GrayscaleIfNeeded(src);
 
             tmp = new OtsuThreshold().Apply(tmp);
 
@@ -217,8 +217,59 @@ namespace MangaConverter
             return ImgUtil.CopyRect(src, cropL, cropT, src.Width - cropL - cropR, src.Height - cropT - cropB);
         }
 
+        public static Bitmap Straighten(Bitmap src)
+        {
+            var tmp = GrayscaleIfNeeded(src);
+            tmp = new FiltersSequence(
+                new OtsuThreshold(),
+                new Invert(),
+                new CannyEdgeDetector(),
+                new BlobsFiltering()
+                {
+                    CoupledSizeFiltering = true,
+                    MinWidth = tmp.Height / 6,
+                    MinHeight = tmp.Height / 6
+                }
+            ).Apply(tmp);
+
+            //Detect lines
+            var lineTransform = new HoughLineTransformation()
+            {
+                MinLineIntensity = 100,
+                StepsPerDegree = 5,
+            };
+            lineTransform.ProcessImage(tmp);
+            var lines = lineTransform.GetMostIntensiveLines(10);
+
+            //normalise angle and keep only lines close to horizontal or vertical
+            int maxRotation = 5;
+            var angles = lines
+                .Select(l => l.Theta % 90)
+                .Select(a => a > 45 ? a - 90 : a)
+                .Where(a => a <= maxRotation)
+                .ToArray(); ;
+
+            var avg = angles.Average();
+            var stdDev = angles.StandardDeviation();
+
+            angles = angles.Where(a => Math.Abs(avg - a) < stdDev).ToArray();
+
+            if (angles.Length < 2 || angles.StandardDeviation() > 1)
+            {
+                //not enough info to straighten image
+                return src;
+            }
+
+            var angle = angles.Average();
+            if (Math.Abs(angle) < 0.01)
+                return src;
+            src = AForge.Imaging.Image.Clone(src, PixelFormat.Format24bppRgb);
+            return new RotateBilinear(-angle, true).Apply(src);
+        }
+
         public static Bitmap OptimizeContrast(Bitmap src)
         {
+            src = GrayscaleIfNeeded(src);
             var statistics = new ImageStatistics(src);
             var filter = new AForge.Imaging.Filters.LevelsLinear();
             var min = Math.Min(100, statistics.Gray.GetRange(0.8).Min);

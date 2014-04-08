@@ -366,6 +366,12 @@ namespace System.Collections.Generic
 
     public static class ExtIEnumerable
     {
+        public static double StandardDeviation(this IEnumerable<double> values)
+        {
+            double avg = values.Average();
+            return Math.Sqrt(values.Average(v => Math.Pow(v - avg, 2)));
+        }
+
         public static IList<T> Shuffle<T>(this IEnumerable<T> e)
         {
             var a = e.ToArray();

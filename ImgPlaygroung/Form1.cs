@@ -12,6 +12,8 @@ using System.Drawing.Imaging;
 using AForge.Imaging;
 using System.Diagnostics;
 using MangaConverter;
+using AForge;
+using AForge.Math.Geometry;
 
 namespace ImgPlaygroung
 {
@@ -27,7 +29,7 @@ namespace ImgPlaygroung
             set
             {
                 _original = value;
-                pbOriginal.Image = value;
+                pb1.Image = value;
             }
         }
 
@@ -41,7 +43,7 @@ namespace ImgPlaygroung
             set
             {
                 _result = value;
-                pfResult.Image = value;
+                pb2.Image = value;
             }
         }
 
@@ -56,7 +58,7 @@ namespace ImgPlaygroung
         public Form1()
         {
             InitializeComponent();
-            Original = (Bitmap)System.Drawing.Image.FromFile(@"C:\torrent\Monster - Urasawa\Monster Tome 01\Monster Tome 01 - 095.jpg");
+            Original = (Bitmap)System.Drawing.Image.FromFile(@"C:\torrent\Monster - Urasawa\Monster Tome 01\Monster Tome 01 - 005.jpg");
         }
 
         private void btReset_Click(object sender, EventArgs e)
@@ -90,80 +92,154 @@ namespace ImgPlaygroung
             }
         }
 
-        private void btCurrentTest_Click(object sender, EventArgs e)
+        void DrawPoints(IEnumerable<IntPoint> points, int w = 2)
         {
-            Result = MangaConverter.MangaConverter.SplitPage(Working).First();
-
-            
-
-            ApplyFilter(new GrayscaleBT709());
-            var splited = Result;
-
-            var stats = new ImageStatistics(Working);
-            var hist = stats.Gray;
-            Log("min={0}, max={1}, mean={2}, median={3}, SdtDev={4}", hist.Min, hist.Max, hist.Mean, hist.Median, hist.StdDev);
-            ApplyFilter(new Threshold((int)(hist.Mean - hist.StdDev / 2)));
-
-
-            //BlobsFiltering blobFilter = new BlobsFiltering();
-            //// configure filter
-            //blobFilter.CoupledSizeFiltering = true;
-            //var minSize = Working.Height / 20;
-            //blobFilter.MinWidth = minSize;
-            //blobFilter.MinHeight = minSize;
-            //blobFilter.CoupledSizeFiltering = true;
-
-            //ApplyFilter(blobFilter);
-            //ApplyFilter(new Invert());
-
-            //ApplyFilter(blobFilter);
-            //ApplyFilter(new Invert());
-
-            int maxBorderSize = (int)(Working.Height * 0.15);
-
-            var crops = new int[4];
-
-            for (int j = 0; j < 4; j++)
-            {
-                Working.RotateFlip(RotateFlipType.Rotate270FlipNone);
-
-                var h = Working.Height - maxBorderSize;
-                var imgData = Working.LockBits(
-                    new Rectangle(0, maxBorderSize / 2, maxBorderSize, h),
-                    ImageLockMode.ReadOnly,
-                    Working.PixelFormat);
-                try
+            var result = AForge.Imaging.Image.Clone(Working, PixelFormat.Format32bppArgb);
+            Working.Dispose();
+            using (var g = Graphics.FromImage(result))
+            using (var brush = new SolidBrush(GetRandomColor()))
+            using (var pen = new Pen(brush, w)){
+                foreach (IntPoint p in points)
                 {
-                    var hHisto = new HorizontalIntensityStatistics(imgData).Gray;
-
-                    //Search for last white or black pixel column
-                    crops[j] = Math.Max(
-                        Array.LastIndexOf(hHisto.Values, 0),
-                        Array.LastIndexOf(hHisto.Values, h * 255)
-                    );
-                    if (crops[j] < 0) crops[j] = 0;
-                }
-                finally
-                {
-                    Working.UnlockBits(imgData);
+                    g.DrawRectangle(pen, p.X - w/2, p.Y - w/2, w, w);
                 }
             }
+            Result = result;
+        }
 
-            int
-                cropT = crops[0],
-                cropR = crops[1],
-                cropB = crops[2],
-                cropL = crops[3];
+        int colorIndex = 0;
+        Color GetRandomColor()
+        {
+            return new[]{
+                Color.Red,
+                Color.Blue,
+                Color.Green,
+                Color.Yellow,
+                Color.Salmon,
+                Color.Pink,
+                Color.Cyan
+            }[colorIndex++];
+        }
 
+        private void btCurrentTest_Click(object sender, EventArgs e)
+        {
+            var splited = Result = MangaConverter.MangaConverter.SplitPage(Working).Last();
 
-            Result = MangaConverter.MangaConverter.OptimizeContrast(splited);
-            Result = ImgUtil.CopyRect(Working, cropL, cropT, Working.Width - cropL - cropR, Working.Height - cropT - cropB);
-            
+        }
+        void DrawHoughLines()
+        {
+            HoughLineTransformation lineTransform = new HoughLineTransformation()
+            {
+                MinLineIntensity = 100,
+                StepsPerDegree = 5,
+            };
+            // apply Hough line transofrm
+            lineTransform.ProcessImage(Working);
+
+            var lines = lineTransform.GetMostIntensiveLines(10);
+
+            Result = AForge.Imaging.Image.Clone(Working, PixelFormat.Format32bppRgb);
+            foreach (HoughLine line in lines)
+            {
+                var l = line;
+                Log("%90: {2}, l.Theta:{1}, l.Radius: {0}, Intensity: {3}", l.Radius, l.Theta, l.Theta % 90, l.Intensity);
+                // get line's radius and theta values
+                int r = line.Radius;
+                double t = line.Theta;
+
+                // check if line is in lower part of the image
+                if (r < 0)
+                {
+                    t += 180;
+                    r = -r;
+                }
+
+                // convert degrees to radians
+                t = (t / 180) * Math.PI;
+
+                // get image centers (all coordinate are measured relative
+                // to center)
+                int w2 = Working.Width / 2;
+                int h2 = Working.Height / 2;
+
+                double x0 = 0, x1 = 0, y0 = 0, y1 = 0;
+
+                if (line.Theta != 0)
+                {
+                    // none-vertical line
+                    x0 = -w2; // most left point
+                    x1 = w2;  // most right point
+
+                    // calculate corresponding y values
+                    y0 = (-Math.Cos(t) * x0 + r) / Math.Sin(t);
+                    y1 = (-Math.Cos(t) * x1 + r) / Math.Sin(t);
+                }
+                else
+                {
+                    // vertical line
+                    x0 = line.Radius;
+                    x1 = line.Radius;
+
+                    y0 = h2;
+                    y1 = -h2;
+                }
+
+                var sourceData = Working.LockBits(new Rectangle(0, 0, Working.Width, Working.Height), ImageLockMode.ReadOnly, Working.PixelFormat);
+                // draw line on the image
+                Drawing.Line(sourceData,
+                    new IntPoint((int)x0 + w2, h2 - (int)y0),
+                    new IntPoint((int)x1 + w2, h2 - (int)y1),
+                    Color.Red);
+                Working.UnlockBits(sourceData);
+            }
+        }
+
+        void Grayscale()
+        {
+            if(Working.PixelFormat != PixelFormat.Format8bppIndexed)
+                ApplyFilter(new GrayscaleBT709());
+        }
+
+        private void CropBorders(object sender, EventArgs e)
+        {
+            Result = MangaConverter.MangaConverter.CropBorders(Working);
         }
 
         void Log(String message, params Object[] args)
         {
             tbLog.Text += String.Format(message, args) + "\r\n";
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            DrawHoughLines();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Result = MangaConverter.MangaConverter.Straighten(Working);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Result = MangaConverter.MangaConverter.SplitPage(Working).Last();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Result = MangaConverter.MangaConverter.SplitPage(Working).First();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            Result = MangaConverter.MangaConverter.Straighten(Working);
+            Result = MangaConverter.MangaConverter.CropBorders(Working);
+            Result = MangaConverter.MangaConverter.OptimizeContrast(Working);
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            Result = MangaConverter.MangaConverter.OptimizeContrast(Working);
         }
     }
 }

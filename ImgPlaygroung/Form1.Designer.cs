@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.pbOriginal = new System.Windows.Forms.PictureBox();
-            this.pfResult = new System.Windows.Forms.PictureBox();
+            this.pb1 = new System.Windows.Forms.PictureBox();
+            this.pb2 = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btBinarize = new System.Windows.Forms.Button();
             this.btReset = new System.Windows.Forms.Button();
@@ -38,9 +38,16 @@
             this.btGrayscale = new System.Windows.Forms.Button();
             this.btCurrentTest = new System.Windows.Forms.Button();
             this.tbLog = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbOriginal)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pfResult)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pb1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pb2)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -52,8 +59,8 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.pbOriginal, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.pfResult, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.pb1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.pb2, 1, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -63,33 +70,40 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(617, 413);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // pbOriginal
+            // pb1
             // 
-            this.pbOriginal.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.pb1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pbOriginal.Location = new System.Drawing.Point(3, 3);
-            this.pbOriginal.Name = "pbOriginal";
-            this.pbOriginal.Size = new System.Drawing.Size(302, 407);
-            this.pbOriginal.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pbOriginal.TabIndex = 0;
-            this.pbOriginal.TabStop = false;
+            this.pb1.Location = new System.Drawing.Point(3, 3);
+            this.pb1.Name = "pb1";
+            this.pb1.Size = new System.Drawing.Size(302, 407);
+            this.pb1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pb1.TabIndex = 0;
+            this.pb1.TabStop = false;
             // 
-            // pfResult
+            // pb2
             // 
-            this.pfResult.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.pb2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pfResult.Location = new System.Drawing.Point(311, 3);
-            this.pfResult.Name = "pfResult";
-            this.pfResult.Size = new System.Drawing.Size(303, 407);
-            this.pfResult.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pfResult.TabIndex = 1;
-            this.pfResult.TabStop = false;
+            this.pb2.Location = new System.Drawing.Point(311, 3);
+            this.pb2.Name = "pb2";
+            this.pb2.Size = new System.Drawing.Size(303, 407);
+            this.pb2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pb2.TabIndex = 1;
+            this.pb2.TabStop = false;
             // 
             // panel1
             // 
             this.panel1.AutoScroll = true;
+            this.panel1.Controls.Add(this.button7);
+            this.panel1.Controls.Add(this.button6);
+            this.panel1.Controls.Add(this.button5);
+            this.panel1.Controls.Add(this.button4);
+            this.panel1.Controls.Add(this.button3);
+            this.panel1.Controls.Add(this.button2);
+            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.tbLog);
             this.panel1.Controls.Add(this.btCurrentTest);
             this.panel1.Controls.Add(this.btGrayscale);
@@ -134,7 +148,7 @@
             // 
             // btGrayscale
             // 
-            this.btGrayscale.Location = new System.Drawing.Point(4, 34);
+            this.btGrayscale.Location = new System.Drawing.Point(129, 68);
             this.btGrayscale.Name = "btGrayscale";
             this.btGrayscale.Size = new System.Drawing.Size(75, 23);
             this.btGrayscale.TabIndex = 3;
@@ -144,7 +158,7 @@
             // 
             // btCurrentTest
             // 
-            this.btCurrentTest.Location = new System.Drawing.Point(4, 123);
+            this.btCurrentTest.Location = new System.Drawing.Point(7, 273);
             this.btCurrentTest.Name = "btCurrentTest";
             this.btCurrentTest.Size = new System.Drawing.Size(75, 23);
             this.btCurrentTest.TabIndex = 4;
@@ -166,6 +180,76 @@
             this.tbLog.TabIndex = 5;
             this.tbLog.WordWrap = false;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(6, 97);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 6;
+            this.button1.Text = "CropBorders";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.CropBorders);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(88, 96);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 7;
+            this.button2.Text = "DrawHoughLines";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(170, 95);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 8;
+            this.button3.Text = "Straighten";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(6, 192);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(75, 23);
+            this.button4.TabIndex = 9;
+            this.button4.Text = "Left";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(88, 192);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(75, 23);
+            this.button5.TabIndex = 10;
+            this.button5.Text = "Right";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(7, 126);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(75, 23);
+            this.button6.TabIndex = 11;
+            this.button6.Text = "Clean";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(89, 126);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(75, 23);
+            this.button7.TabIndex = 12;
+            this.button7.Text = "Contrast";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -176,8 +260,8 @@
             this.Name = "Form1";
             this.Text = "Form1";
             this.tableLayoutPanel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pbOriginal)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pfResult)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pb1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pb2)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -188,8 +272,8 @@
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.PictureBox pbOriginal;
-        private System.Windows.Forms.PictureBox pfResult;
+        private System.Windows.Forms.PictureBox pb1;
+        private System.Windows.Forms.PictureBox pb2;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btBinarize;
         private System.Windows.Forms.Button btReset;
@@ -197,6 +281,13 @@
         private System.Windows.Forms.Button btGrayscale;
         private System.Windows.Forms.Button btCurrentTest;
         private System.Windows.Forms.TextBox tbLog;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
     }
 }
 
