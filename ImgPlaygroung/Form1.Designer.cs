@@ -45,10 +45,12 @@
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
+            this.pbHisto = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb2)).BeginInit();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHisto)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -67,7 +69,7 @@
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(617, 413);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(553, 630);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // pb1
@@ -77,7 +79,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pb1.Location = new System.Drawing.Point(3, 3);
             this.pb1.Name = "pb1";
-            this.pb1.Size = new System.Drawing.Size(302, 407);
+            this.pb1.Size = new System.Drawing.Size(270, 624);
             this.pb1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pb1.TabIndex = 0;
             this.pb1.TabStop = false;
@@ -87,9 +89,9 @@
             this.pb2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pb2.Location = new System.Drawing.Point(311, 3);
+            this.pb2.Location = new System.Drawing.Point(279, 3);
             this.pb2.Name = "pb2";
-            this.pb2.Size = new System.Drawing.Size(303, 407);
+            this.pb2.Size = new System.Drawing.Size(271, 624);
             this.pb2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pb2.TabIndex = 1;
             this.pb2.TabStop = false;
@@ -97,6 +99,7 @@
             // panel1
             // 
             this.panel1.AutoScroll = true;
+            this.panel1.Controls.Add(this.pbHisto);
             this.panel1.Controls.Add(this.button7);
             this.panel1.Controls.Add(this.button6);
             this.panel1.Controls.Add(this.button5);
@@ -111,9 +114,9 @@
             this.panel1.Controls.Add(this.btReset);
             this.panel1.Controls.Add(this.btBinarize);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(617, 0);
+            this.panel1.Location = new System.Drawing.Point(553, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(254, 413);
+            this.panel1.Size = new System.Drawing.Size(318, 630);
             this.panel1.TabIndex = 1;
             // 
             // btBinarize
@@ -168,15 +171,13 @@
             // 
             // tbLog
             // 
-            this.tbLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbLog.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.tbLog.Font = new System.Drawing.Font("Consolas", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbLog.Location = new System.Drawing.Point(4, 312);
+            this.tbLog.Location = new System.Drawing.Point(0, 445);
             this.tbLog.Multiline = true;
             this.tbLog.Name = "tbLog";
             this.tbLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbLog.Size = new System.Drawing.Size(250, 97);
+            this.tbLog.Size = new System.Drawing.Size(318, 185);
             this.tbLog.TabIndex = 5;
             this.tbLog.WordWrap = false;
             // 
@@ -250,11 +251,20 @@
             this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
+            // pbHisto
+            // 
+            this.pbHisto.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pbHisto.Location = new System.Drawing.Point(0, 327);
+            this.pbHisto.Name = "pbHisto";
+            this.pbHisto.Size = new System.Drawing.Size(318, 118);
+            this.pbHisto.TabIndex = 13;
+            this.pbHisto.TabStop = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(871, 413);
+            this.ClientSize = new System.Drawing.Size(871, 630);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.panel1);
             this.Name = "Form1";
@@ -264,6 +274,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pb2)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHisto)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -288,6 +299,7 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.PictureBox pbHisto;
     }
 }
 

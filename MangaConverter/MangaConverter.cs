@@ -206,6 +206,12 @@ namespace MangaConverter
             Bitmap tmp = GrayscaleIfNeeded(src);
 
             tmp = new OtsuThreshold().Apply(tmp);
+            new BlobsFiltering()
+            {
+                CoupledSizeFiltering = true,
+                MinWidth = 6,
+                MinHeight = 6
+            }.ApplyInPlace(tmp);
 
             int maxBorderSize = (int)Math.Min(tmp.Height * 0.15, tmp.Width * 0.3);
             var crops = new int[4];
@@ -295,7 +301,10 @@ namespace MangaConverter
             if (Math.Abs(angle) < 0.01)
                 return src;
             src = AForge.Imaging.Image.Clone(src, PixelFormat.Format24bppRgb);
-            return new RotateBilinear(-angle, true).Apply(src);
+            return new FiltersSequence(
+                new Invert(),
+                new RotateBilinear(-angle, true),
+                new Invert()).Apply(src);
         }
 
         public static Bitmap OptimizeContrast(Bitmap src)

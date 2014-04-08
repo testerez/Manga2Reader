@@ -35,57 +35,62 @@ namespace ImgPlaygroung
         }
 
         Bitmap _result;
-        Bitmap Result
+
+        Bitmap W
         {
             get
             {
-                return _result;
+                return _result ?? Original;
             }
             set
             {
                 _result = value;
                 pb2.Image = value;
-            }
-        }
-
-        Bitmap Working
-        {
-            get
-            {
-                return Result ?? Original;
+                if (value != null)
+                {
+                    var histo = new ImageStatistics(GrayscaleIfNeeded(value)).Gray;
+                    var b = new Bitmap(pbHisto.Width, pbHisto.Height);
+                    DrawHistogram(b, histo, Color.Black);
+                    pbHisto.Image = b;
+                }
+                else
+                {
+                    pbHisto.Image = null;
+                }
             }
         }
 
         public Form1()
         {
             InitializeComponent();
-            Original = (Bitmap)System.Drawing.Image.FromFile(@"C:\Users\Tom\Desktop\test pages\Monster v01 c001 p005.jpg");
+            Original = (Bitmap)System.Drawing.Image.FromFile(@"C:\Users\Tom\Desktop\test pages\0015.jpg");
+            WindowState = FormWindowState.Maximized;
         }
 
         private void btReset_Click(object sender, EventArgs e)
         {
-            Result = null;
+            W = null;
         }
 
         private void btBinarize_Click(object sender, EventArgs e)
         {
-            ApplyFilter(new Threshold(int.Parse(tbBinarize.Text)));
+            Apply(new Threshold(int.Parse(tbBinarize.Text)));
         }
 
         private void btGrayscale_Click(object sender, EventArgs e)
         {
-            ApplyFilter(new GrayscaleBT709());
+            Apply(new GrayscaleBT709());
         }
 
-        private void ApplyFilter(IFilter f)
+        private void Apply(IFilter f)
         {
             try
             {
                 var watch = Stopwatch.StartNew();
-                var r = f.Apply(Working);
+                var r = f.Apply(W);
                 watch.Stop();
                 Log("{0} applyed in {1}ms", f.GetType().ToString().Split('.').Last(), watch.ElapsedMilliseconds);
-                Result = r;
+                W = r;
             }
             catch (Exception ex)
             {
@@ -161,23 +166,21 @@ namespace ImgPlaygroung
                 : Grayscale.CommonAlgorithms.BT709.Apply(src);
         }
 
+        void ForcecGrayscale()
+        {
+            W = GrayscaleIfNeeded(W);
+        }
+
         private void btCurrentTest_Click(object sender, EventArgs e)
         {
-            Result = GrayscaleIfNeeded(Working);
-            var g = new ImageStatistics(Working).Gray;
-            int grayTotal = g.Values
-                .Skip(10)
-                .Take(g.Values.Length - 20)
-                .Sum();
-            Log("gray: {0}", grayTotal / (double)g.TotalCount);
-
-            Result = GrayscaleIfNeeded(Working);
-            var stats = new ImageStatistics(Working);
-            stats.Gray.GetRange(0.9);
-
-            var b = new Bitmap(500, 500);
-            DrawHistogram(b, stats.Gray);
-            Result = b;
+            ForcecGrayscale();
+            Apply(new OtsuThreshold());
+            Apply(new BlobsFiltering()
+            {
+                CoupledSizeFiltering = true,
+                MinWidth = 6,
+                MinHeight = 6
+            });
         }
 
         void DrawHoughLines()
@@ -188,11 +191,11 @@ namespace ImgPlaygroung
                 StepsPerDegree = 5,
             };
             // apply Hough line transofrm
-            lineTransform.ProcessImage(Working);
+            lineTransform.ProcessImage(W);
 
             var lines = lineTransform.GetMostIntensiveLines(10);
 
-            Result = AForge.Imaging.Image.Clone(Working, PixelFormat.Format32bppRgb);
+            W = AForge.Imaging.Image.Clone(W, PixelFormat.Format32bppRgb);
             foreach (HoughLine line in lines)
             {
                 var l = line;
@@ -213,8 +216,8 @@ namespace ImgPlaygroung
 
                 // get image centers (all coordinate are measured relative
                 // to center)
-                int w2 = Working.Width / 2;
-                int h2 = Working.Height / 2;
+                int w2 = W.Width / 2;
+                int h2 = W.Height / 2;
 
                 double x0 = 0, x1 = 0, y0 = 0, y1 = 0;
 
@@ -238,19 +241,19 @@ namespace ImgPlaygroung
                     y1 = -h2;
                 }
 
-                var sourceData = Working.LockBits(new Rectangle(0, 0, Working.Width, Working.Height), ImageLockMode.ReadOnly, Working.PixelFormat);
+                var sourceData = W.LockBits(new Rectangle(0, 0, W.Width, W.Height), ImageLockMode.ReadOnly, W.PixelFormat);
                 // draw line on the image
                 Drawing.Line(sourceData,
                     new IntPoint((int)x0 + w2, h2 - (int)y0),
                     new IntPoint((int)x1 + w2, h2 - (int)y1),
                     Color.Red);
-                Working.UnlockBits(sourceData);
+                W.UnlockBits(sourceData);
             }
         }
 
         private void CropBorders(object sender, EventArgs e)
         {
-            Result = MangaConverter.MangaConverter.CropBorders(Working);
+            W = MangaConverter.MangaConverter.CropBorders(W);
         }
 
         void Log(String message, params Object[] args)
@@ -265,27 +268,27 @@ namespace ImgPlaygroung
 
         private void button3_Click(object sender, EventArgs e)
         {
-            Result = MangaConverter.MangaConverter.Straighten(Working);
+            W = MangaConverter.MangaConverter.Straighten(W);
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            Result = MangaConverter.MangaConverter.SplitPage(Working).Last();
+            W = MangaConverter.MangaConverter.SplitPage(W).Last();
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            Result = MangaConverter.MangaConverter.SplitPage(Working).First();
+            W = MangaConverter.MangaConverter.SplitPage(W).First();
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
-            Result = new MangaConverter.MangaConverter(MangaOutputFormat.PC).Clean(Working);
+            W = new MangaConverter.MangaConverter(MangaOutputFormat.PC).Clean(W);
         }
 
         private void button7_Click(object sender, EventArgs e)
         {
-            Result = MangaConverter.MangaConverter.OptimizeContrast(Working);
+            W = MangaConverter.MangaConverter.OptimizeContrast(W);
         }
     }
 }
