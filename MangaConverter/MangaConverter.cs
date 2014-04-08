@@ -247,7 +247,10 @@ namespace MangaConverter
                 .Select(l => l.Theta % 90)
                 .Select(a => a > 45 ? a - 90 : a)
                 .Where(a => a <= maxRotation)
-                .ToArray(); ;
+                .ToArray();
+
+            if (angles.Length < 2)
+                return src;
 
             var avg = angles.Average();
             var stdDev = angles.StandardDeviation();
