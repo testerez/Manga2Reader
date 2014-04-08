@@ -177,9 +177,7 @@ namespace MangaConverter
                 ? src 
                 : Grayscale.CommonAlgorithms.BT709.Apply(src);
 
-            //Binarize imge
-            var gray = new ImageStatistics(tmp).Gray;
-            tmp = new Threshold((int)(gray.Mean - gray.StdDev / 2)).Apply(tmp);
+            tmp = new OtsuThreshold().Apply(tmp);
 
             int maxBorderSize = (int)Math.Min(tmp.Height * 0.15, tmp.Width * 0.3);
             var crops = new int[4];
