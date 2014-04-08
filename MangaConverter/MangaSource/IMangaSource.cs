@@ -11,6 +11,7 @@ namespace MangaConverter.MangaSource
     {
         IEnumerable<Bitmap> GetPages();
         String GetName();
+        String Location { get; }
         int? GetApproximatePagesCount();
     }
 }

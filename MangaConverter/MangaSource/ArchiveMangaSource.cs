@@ -11,16 +11,16 @@ namespace MangaConverter.MangaSource
 {
     class ArchiveMangaSource : IMangaSource
     {
-        private String _path;
+        public String Location { get; private set; }
 
         public ArchiveMangaSource(String path)
         {
-            _path = path;
+            Location = path;
         }
 
         public string GetName()
         {
-            return Path.GetFileNameWithoutExtension(_path);
+            return Path.GetFileNameWithoutExtension(Location);
         }
 
         public IEnumerable<Bitmap> GetPages()
@@ -40,7 +40,7 @@ namespace MangaConverter.MangaSource
 
         private IEnumerable<ZipEntry> GetImageEntries()
         {
-            using (var zip = ZipFile.Read(_path))
+            using (var zip = ZipFile.Read(Location))
             {
                 return zip.Where(e => Path.GetExtension(e.FileName).ToLower().In(".jpg", ".jpeg"));
             }

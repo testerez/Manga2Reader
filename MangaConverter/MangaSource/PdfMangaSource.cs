@@ -12,16 +12,16 @@ namespace MangaConverter.MangaSource
 {
     class PdfMangaSource : IMangaSource
     {
-        private String _path;
+        public String Location { get; private set; }
 
         public PdfMangaSource(String path)
         {
-            _path = path;
+            Location = path;
         }
 
         public IEnumerable<Bitmap> GetPages()
         {
-            using (var pdf = new PdfReader(_path))
+            using (var pdf = new PdfReader(Location))
             {
                 for (int pageNumber = 1; pageNumber <= pdf.NumberOfPages; pageNumber++)
                 {
@@ -34,12 +34,12 @@ namespace MangaConverter.MangaSource
 
         public string GetName()
         {
-            return Path.GetFileNameWithoutExtension(_path);
+            return Path.GetFileNameWithoutExtension(Location);
         }
 
         public int? GetApproximatePagesCount()
         {
-            using (var pdf = new PdfReader(_path))
+            using (var pdf = new PdfReader(Location))
             {
                 return pdf.NumberOfPages;
             }

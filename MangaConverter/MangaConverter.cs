@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,19 +17,22 @@ namespace MangaConverter
     {
         public Logger Log { get; private set; }
         public bool EnableContrastOptimization { get; set; }
+        public bool EnableCropBorders { get; set; }
         public MangaOutputFormat OutputFormat { get; private set; }
 
-        public MangaConverter(MangaOutputFormat outputFormat, Logger l = null, bool optimizeContrast = true){
+        public MangaConverter(MangaOutputFormat outputFormat, Logger l = null, bool optimizeContrast = true, bool cropBorders = true)
+        {
             Log = l ?? new ConsoleLogger();
             EnableContrastOptimization = optimizeContrast;
             OutputFormat = outputFormat;
+            EnableCropBorders = cropBorders;
         }
 
         public void ConvertAll(String src, String destDir)
         {
             if (Directory.Exists(src))
                 Log.I("Scannig '{0}' for mangas...", Path.GetFullPath(src));
-            var all = FindMangaRecursive(src).ToList();
+            var all = FindMangaRecursive(src, destDir).ToList();
             if (all.Count == 0)
                 Log.E("No manga found in '{0}'", src);
             int cmpt = 0;
@@ -38,12 +42,14 @@ namespace MangaConverter
                 try
                 {
                     var mangaName = m.GetName();
-                    Log.I("Converting {0}/{1}: {2}", cmpt, all.Count, mangaName);
+                    Log.I("Converting {0}/{1}: {2} ({3})", cmpt, all.Count, mangaName, m.Location);
                     EbookGenerator.Save(GetSplitedPages(m).Select(Clean), destDir, mangaName, OutputFormat.Format);
                 }
                 catch (Exception ex)
                 {
                     Log.E(ex.Message);
+                    Log.D("\nStackTrace:");
+                    Log.D(ex.StackTrace);
                 }
                 
             }
@@ -51,6 +57,8 @@ namespace MangaConverter
 
         private Bitmap Clean(Bitmap src)
         {
+            if (EnableCropBorders)
+                src = CropBorders(src);
             src = ForceGrayScale(src);
             if (EnableContrastOptimization)
                 src = OptimizeContrast(src);
@@ -90,12 +98,13 @@ namespace MangaConverter
             }
         }
 
-        public IEnumerable<IMangaSource> FindMangaRecursive(String src)
+        public IEnumerable<IMangaSource> FindMangaRecursive(String src, String dest)
         {
             var ignoreList = new[]{
                 @"c:\windows",
                 @"c:\$Recycle.Bin",
                 @"c:\ProgramData",
+                dest,
             };
             bool srcIsFile = File.Exists(src);
             var files = srcIsFile ? new[] { src } : SafeEnumerateFiles(src, "*", SearchOption.AllDirectories, ignoreList);
@@ -114,10 +123,11 @@ namespace MangaConverter
                         break;
                     case ".jpg":
                     case ".jpeg":
-                        if (!imageMangaDirectories.Contains(src))
+                        var dir = Path.GetDirectoryName(f);
+                        if (!imageMangaDirectories.Contains(dir))
                         {
-                            yield return new ImagesMangaSource(src);
-                            imageMangaDirectories.Add(src);
+                            yield return new ImagesMangaSource(dir);
+                            imageMangaDirectories.Add(dir);
                         }
                         break;
                 }
@@ -138,9 +148,8 @@ namespace MangaConverter
             }
         }
 
-        private static IEnumerable<Bitmap> SplitPage(Bitmap src)
+        public static IEnumerable<Bitmap> SplitPage(Bitmap src)
         {
-            
             const double minRatioForSplit = 1;
             double srcRatio = src.Width / (double)src.Height;
             if (srcRatio < minRatioForSplit)
@@ -155,17 +164,68 @@ namespace MangaConverter
             var statistics = new ImageStatistics(src);
             return statistics.IsGrayscale
                 ? src
-                : new Grayscale(0.2125, 0.7154, 0.0721).Apply(src);
+                : Grayscale.CommonAlgorithms.BT709.Apply(src);
         }
 
-        private Bitmap OptimizeContrast(Bitmap src)
+        /// <summary>
+        /// Detect and crop page borders
+        /// </summary>
+        /// <param name="src">8 bpp indexed</param>
+        private static Bitmap CropBorders(Bitmap src)
+        {
+            Bitmap tmp = src.PixelFormat == PixelFormat.Format8bppIndexed
+                ? src 
+                : Grayscale.CommonAlgorithms.BT709.Apply(src);
+
+            //Binarize imge
+            var gray = new ImageStatistics(tmp).Gray;
+            tmp = new Threshold((int)(gray.Mean - gray.StdDev / 2)).Apply(tmp);
+
+            int maxBorderSize = (int)Math.Min(tmp.Height * 0.15, tmp.Width * 0.3);
+            var crops = new int[4];
+
+            for (int side = 0; side < 4; side++)
+            {
+                tmp.RotateFlip(RotateFlipType.Rotate270FlipNone);
+
+                var h = tmp.Height - maxBorderSize;
+                var imgData = tmp.LockBits(
+                    new Rectangle(0, maxBorderSize / 2, maxBorderSize, h),
+                    ImageLockMode.ReadOnly,
+                    tmp.PixelFormat);
+                try
+                {
+                    var hHisto = new HorizontalIntensityStatistics(imgData).Gray;
+
+                    //Search for last white or black pixel column
+                    crops[side] = Math.Max(
+                        Array.LastIndexOf(hHisto.Values, 0),
+                        Array.LastIndexOf(hHisto.Values, h * 255)
+                    );
+                    if (crops[side] < 0) crops[side] = 0;
+                }
+                finally
+                {
+                    tmp.UnlockBits(imgData);
+                }
+            }
+
+            int
+                cropT = crops[0],
+                cropR = crops[1],
+                cropB = crops[2],
+                cropL = crops[3];
+
+            return ImgUtil.CopyRect(src, cropL, cropT, src.Width - cropL - cropR, src.Height - cropT - cropB);
+        }
+
+        public static Bitmap OptimizeContrast(Bitmap src)
         {
             var statistics = new ImageStatistics(src);
             var filter = new AForge.Imaging.Filters.LevelsLinear();
             var min = Math.Min(100, statistics.Gray.GetRange(0.8).Min);
             var max = Math.Max(150, statistics.Gray.GetRange(0.8).Max - 20);
             filter.Input = new AForge.IntRange(min, max);
-            Log.D("Applying level filter (min: {0}, max: {1})", min, max);
             return filter.Apply(src);
         }
     }

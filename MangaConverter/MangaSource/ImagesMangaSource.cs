@@ -10,26 +10,26 @@ namespace MangaConverter.MangaSource
 {
     public class ImagesMangaSource : IMangaSource
     {
-        private String _path;
+        public String Location { get; private set; }
 
         public ImagesMangaSource(String path)
         {
-            _path = path;
+            Location = path;
         }
 
         public string GetName()
         {
-            return _path.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries).Last();
+            return Location.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries).Last();
         }
 
         public IEnumerable<Bitmap> GetPages()
         {
-            return Directory.EnumerateFiles(_path, "*.jpg").Select(f => (Bitmap)Bitmap.FromFile(f));
+            return Directory.EnumerateFiles(Location, "*.jpg").Select(f => (Bitmap)Bitmap.FromFile(f));
         }
 
         public int? GetApproximatePagesCount()
         {
-            return Directory.EnumerateFiles(_path, "*.jpg").Count();
+            return Directory.EnumerateFiles(Location, "*.jpg").Count();
         }
     }
 }

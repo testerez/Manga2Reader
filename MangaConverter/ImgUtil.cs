@@ -134,17 +134,22 @@ namespace MangaConverter
             int wStart = 0;
             for(int i = 0; i < parts; i++){
                 var w = src.Width / parts + (src.Width % parts > i ? 1 : 0);
-                Bitmap result = new Bitmap(w, src.Height);
-                using (var g = Graphics.FromImage(result))
-                {
-                    g.DrawImage(src, new Rectangle(0, 0, result.Width, result.Height),
-                        wStart,
-                        0,
-                        result.Width, result.Height, GraphicsUnit.Pixel, null);
-                }
-                wStart += result.Width;
-                yield return result;
+                yield return CopyRect(src, wStart, 0, w, src.Height);
+                wStart += w;
             }
+        }
+
+        public static Bitmap CopyRect(Bitmap src, int x, int y, int w, int h)
+        {
+            Bitmap result = new Bitmap(w, h);
+            using (var g = Graphics.FromImage(result))
+            {
+                g.DrawImage(src, new Rectangle(0, 0, w, h),
+                    x,
+                    y,
+                    result.Width, result.Height, GraphicsUnit.Pixel, null);
+            }
+            return result;
         }
 
         public static Bitmap RemoveWhiteBg(Bitmap src)
